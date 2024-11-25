@@ -1,0 +1,30 @@
+/* NavBar.css */
+.navbar {
+    background-color: #001529; /* Dark background for the navbar */
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .navbar .logo {
+    color: #fff;
+    font-size: 24px;
+    font-weight: bold;
+    padding: 10px;
+  }
+  
+  .ant-menu-item {
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .ant-menu-item:hover {
+    background-color: #1890ff; /* Highlight color on hover */
+    color: white;
+  }
+  
+  .ant-menu-item-selected {
+    background-color: #1890ff; /* Selected item color */
+    color: white;
+  }
+  
