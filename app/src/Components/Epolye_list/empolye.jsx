@@ -1,9 +1,5 @@
 import {
-    Button,
-    Form,
-    Input,
-    message,
-    Radio,
+    Button,Form,Input,message,Radio,
     Select,
     Upload,
   } from "antd";
@@ -20,10 +16,15 @@ import {
   };
   
   const Finish = async (value) => {
-    const { name, email, phone, designation, gender, course,upload } = value;
-    console.log(name, email, phone, designation, gender, course ,upload);
+    const { name, email, phone, designation, gender, course } = value;
 
-    if (!name || !email || !phone || !designation || !gender || !course || !upload) {
+
+  
+
+
+    console.log(name, email, phone, designation, gender, course );
+
+    if (!name || !email || !phone || !designation || !gender || !course ) {
         message.error("All fields are required.");
         return;
     }
@@ -34,7 +35,7 @@ import {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ name, email, phone, designation, gender, course, upload }),
+            body: JSON.stringify({ name, email, phone, designation, gender, course }),
         });
     
         if (response.ok) {
@@ -56,10 +57,11 @@ import {
   };
   
   function Empole() {
+    const [count,setCount] = useState(0)
     const [create, setCreate] = useState("CreateEmpolye");
   
     const EmpolyehandleChange = () => {
-      setCreate((e) => (e === "ShowEmploye" ? "CreateEmpolye" : "ShowEmploye"));
+      setCreate((e) => (e === "CreateEmpolye" ? "ShowEmploye" : "CreateEmpolye"));
     };
   
     return (
@@ -70,7 +72,7 @@ import {
             <h1 className="text-white text-2xl font-semibold">Employee Management</h1>
           </div>
           <div className="flex justify-between px-10 py-6 bg-gray-100">
-            <h1 className="text-lg font-medium">{create==="CreateEmpolye"?"":(<span>Total Employees: 0</span>)}</h1>
+            <h1 className="text-lg font-medium">{create==="CreateEmpolye"?"":(<span>Total Employees: {count}</span>)}</h1>
             <Button
               type="primary"
               onClick={EmpolyehandleChange}
@@ -190,7 +192,7 @@ import {
               </Form>
             </div>
           ) : (
-           <EmpolyeInformation></EmpolyeInformation>
+           <EmpolyeInformation  count = {count} setCount={setCount}></EmpolyeInformation>
           )}
         </div>
       </>

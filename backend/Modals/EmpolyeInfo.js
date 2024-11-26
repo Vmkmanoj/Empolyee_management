@@ -19,10 +19,6 @@ const employInfo = new MongoDB.Schema({
     course: {
         type: String,
     },
-    image: {
-        data: Buffer, 
-        contentType: String, // MIME type of the image (e.g., 'image/jpeg', 'image/png')
-    },
 });
 
 const EmployeeInfo = MongoDB.model("Employee", employInfo);
