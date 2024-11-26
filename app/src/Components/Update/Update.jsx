@@ -1,101 +1,58 @@
-import {
-    Button,Form,Input,message,Radio,
-    Select,
-    Upload,
-  } from "antd";
-  import { PlusOutlined } from "@ant-design/icons";
-  import React, { useState } from "react";
-
-  import EmpolyeInformation from "../Empolyinfo/EmpolyeInfomation";
-  
-  const normFile = (e) => {
-    if (Array.isArray(e)) {
-      return e;
-    }
-    return e?.fileList;
-  };
-  
- 
+import React from "react";
+import { Form, Input, message ,Select,Radio,Button} from "antd";
 
 
 
-  
-  const FinishFailed = () => {
-    message.error("Please enter valid information!");
-  };
-  
-  function Empole() {
-    const [count,setCount] = useState(0)
-    const [create, setCreate] = useState("CreateEmpolye");
-    const [formdata,setFormdata] = useState(null)
 
+function Update({employeeId}){
 
-
-    const Finish = async (value) => {
-      const { name, email, phone, designation, gender, course } = value;
-  
     
 
-  
-      console.log(name, email, phone, designation, gender, course );
-  
-      if (!name || !email || !phone || !designation || !gender || !course ) {
-          message.error("All fields are required.");
-          return;
-      }
-  
-      try {
-          const response = await fetch("http://localhost:3000/Information", {
-              method: "POST",
-              headers: {
-                  "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ name, email, phone, designation, gender, course }),
-          });
-      
-          if (response.ok) {
-              const data = await response.json();
-              console.log("Success:", data);
-              setFormdata({ name, email, phone, designation, gender, course });
-          } else {
-              console.error("Failed to submit:", response.statusText);
-          }
-      } catch (error) {
-          console.error("Network error:", error);
-      }
-      }
-  
-    const EmpolyehandleChange = () => {
-      setCreate((e) => (e === "CreateEmpolye" ? "ShowEmploye" : "CreateEmpolye"));
+    const Finish = async (value) => {
+        try {
+           
+            const { name, email, phone, designation, gender, course} = value
+    
+            const response = await fetch(`http://localhost:3000/Empolye_detials/${employeeId}`, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ name, email, phone, designation, gender, course }), // Convert updated data to JSON
+            });
+    
+            if (!response.ok) {
+                throw new Error(`Failed to update employee with ID: ${employeeId}`);
+            }
+    
+            const result = await response.json();
+            console.log("Employee updated successfully:", result);
+    
+            // Optional: Update the state if needed
+            // setEmployees((prevEmployees) =>
+            //     prevEmployees.map((employee) =>
+            //         employee._id === employeeId ? { ...employee, ...updatedData } : employee
+            //     )
+            // );
+        } catch (error) {
+            console.error("Error updating employee:", error.message);
+        }
     };
-  
-    return (
-      <>
-        {/* Header Section */}
-        <div className="flex flex-col">
-          <div className="h-24 w-full bg-blue-600 flex items-center mt-2 px-8">
-            <h1 className="text-white text-2xl font-semibold">Employee Management</h1>
-          </div>
-          <div className="flex justify-between px-10 py-6 bg-gray-100">
-            <h1 className="text-lg font-medium">{create==="ShowEmploye"?"":(<span>Total Employees: {count}</span>)}</h1>
-            <Button
-              type="primary"
-              onClick={EmpolyehandleChange}
-              style={{ fontWeight: "bold" }}
-            >
-              {create}
-            </Button>
-          </div>
-        </div>
-  
-        {/* Dynamic Form Section */}
-        <div className="p-10 bg-gray-50">
-          {create === "ShowEmploye" ? (
-            <div className="max-w-lg mx-auto bg-white shadow-lg rounded-lg p-8">
-              <h2 className="text-xl font-semibold text-center mb-6">
-                Create Employee
-              </h2>
-              <Form
+
+
+    const FinishFailed = async ()=>{
+
+        message.error("Enter valid information");
+
+    }
+
+
+    return(
+
+        <>
+
+
+         <Form
                 layout="vertical"
                 name="employee_form"
                 onFinish={Finish}
@@ -170,7 +127,7 @@ import {
                   </Select>
                 </Form.Item>
   
-                <Form.Item
+                {/* <Form.Item
                   label="Upload Resume"
                   name="upload"
                   valuePropName="fileList"
@@ -182,7 +139,7 @@ import {
                       <div style={{ marginTop: 8 }}>Upload</div>
                     </div>
                   </Upload>
-                </Form.Item>
+                </Form.Item> */}
   
                 <Form.Item>
                   <Button
@@ -195,14 +152,20 @@ import {
                   </Button>
                 </Form.Item>
               </Form>
-            </div>
-          ) : (
-           <EmpolyeInformation  count = {count} setCount={setCount}  setCreate={setCreate} create={create} formdata={formdata} ></EmpolyeInformation>
-          )}
-        </div>
-      </>
-    );
-  }
-  
-  export default Empole;
-  
+        
+        
+        
+        
+        
+        </>
+
+
+
+    )
+
+
+
+}
+
+
+export default Update;

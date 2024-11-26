@@ -8,6 +8,12 @@ function NavBar() {
 
     const navigate = useNavigate()
 
+    const logout = () => {
+      localStorage.removeItem("token");
+      navigate("/");
+  };
+  
+
 
 
   return (
@@ -36,7 +42,7 @@ function NavBar() {
 
         {/* Log Out Button */}
         <Col xs={24} sm={12} lg={3} style={{ display: 'flex', justifyContent: 'center' }}>
-          <Button type="primary" size="large" className="log-out-btn">Log Out</Button>
+          <Button type="primary" size="large" className="log-out-btn" onClick={()=>logout()}>Log Out</Button>
         </Col>
       </Row>
     </div>

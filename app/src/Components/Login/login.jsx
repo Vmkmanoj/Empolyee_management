@@ -15,36 +15,61 @@ function Login() {
   const onFinish = async (values) => {
     const { username, password } = values;
 
-
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:3000/Username", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ UserName:username, PassWord:password }),
-      });
+        const response = await fetch("http://localhost:3000/Username", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ UserName: username, PassWord: password }),
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      console.log(data)
+        if (response.ok) {
+            // Save the token in localStorage
+            localStorage.setItem("token", data.token);
+            message.success("Login successful!");
 
-      if (response.ok) {
-        message.success("Login successful!");
-
-        navigate("/HomePage")
-        
-        console.log("User data:", data);
-      } else {
-        message.error(data.message || "Invalid username or password");
-      }
+            navigate("/HomePage");
+        } else {
+            message.error(data.message || "Invalid username or password");
+        }
     } catch (error) {
-      message.error("Something went wrong. Please try again later.");
+        message.error("Something went wrong. Please try again later.");
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
+   
+      const token = localStorage.getItem("token");
+  
+      if (!token) {
+          message.error("You need to log in first.");
+          return;
+      }
+  
+      try {
+          const response = await fetch("http://localhost:3000/protected-route", {
+              method: "GET",
+              headers: {
+                  Authorization: `Bearer ${token}`, // Attach the token
+              },
+          });
+  
+          if (response.ok) {
+              const data = await response.json();
+              console.log("Protected data:", data);
+          } else {
+              message.error("Access denied. Please log in again.");
+          }
+      } catch (error) {
+          console.error("Error accessing protected data:", error.message);
+      
   };
+  
+};
+
 
   const onFinishFailed = (errorInfo) => {
     message.error("Please complete all required fields!");

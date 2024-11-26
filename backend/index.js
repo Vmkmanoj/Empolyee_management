@@ -35,29 +35,55 @@ Mongoess.connect("mongodb+srv://mano:mano123@employeemanagement.7dtux.mongodb.ne
 
 // user();
 
+const SECRET_KEY = "your_secret_key";
 
-
-app.post('/Username',async (req, res) => {
-
+app.post("/Username", async (req, res) => {
     const { UserName, PassWord } = req.body;
 
-    console.log(UserName,PassWord)
+    try {
+        const user = await User.findOne({ name: UserName });
 
-    const user = await User.findOne({ name: UserName, password: PassWord });
+        if (!user || user.password !== PassWord) {
+            return res.status(401).json({ message: "Invalid username or password" });
+        }
 
-    console.log(user)
+        // Generate JWT token
+        const token = jwt.sign({ userId: user._id }, SECRET_KEY, { expiresIn: "1h" });
 
-    if (user) {
-       
-        res.json({ message: 'Username and password are correct' });
-
-
-    } else {
-      
-        res.status(401).json({ message: 'Invalid username or password' });
-
+        res.json({
+            message: "Login successful!",
+            token,
+        });
+    } catch (error) {
+        console.error("Error logging in:", error.message);
+        res.status(500).json({ message: "Something went wrong." });
     }
 });
+
+// Middleware to Verify JWT
+const authenticateToken = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader) {
+        return res.status(401).json({ message: "Authorization token required" });
+    }
+
+    const token = authHeader.split(" ")[1]; // Format: "Bearer <token>"
+
+    jwt.verify(token, SECRET_KEY, (err, user) => {
+        if (err) {
+            return res.status(403).json({ message: "Invalid or expired token" });
+        }
+        req.user = user; // Attach decoded payload to the request
+        next();
+    });
+};
+
+// Example of a Protected Route
+app.get("/protected-route", authenticateToken, (req, res) => {
+    res.json({ message: "This is a protected route", user: req.user });
+});
+
 
 app.post('/Information', async (req, res) => {
     const { name, email, phone, designation, gender, course } = req.body;
@@ -129,16 +155,33 @@ app.delete('/Empolye_detials/:id', async (req, res) => {
 });
 
 
-app.post("/Empolye_detials/:id",async (req,res)=>{
+app.post("/Empolye_detials/:id", async (req, res) => {
+    const { id } = req.params; // Extract the ID from the route parameter
+    const { name, email, phone, designation, gender, course } = req.body; // Extract fields to update
 
+    try {
+        // Check if the employee exists
+        const existingEmployee = await Empolyee.findById(id);
+        if (!existingEmployee) {
+            return res.status(404).json({ message: "Employee not found" });
+        }
 
+        // Update the employee's details
+        const updatedEmployee = await Empolyee.findByIdAndUpdate(
+            id,
+            { name, email, phone, designation, gender, course }, // Fields to update
+            { new: true } // Return the updated document
+        );
 
-    console.log(name)
-
-
-
-
-})
+        res.status(200).json({
+            message: "Employee updated successfully",
+            employee: updatedEmployee,
+        });
+    } catch (error) {
+        console.error("Error updating employee:", error.message);
+        res.status(500).json({ message: "An error occurred while updating the employee" });
+    }
+});
 
 
 

@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from "react";
+import Update from "../Update/Update";
 
-function EmpolyeInformation({ count, setCount }) {
+
+function EmpolyeInformation({ count, setCount ,create,SetCreate}) {
     const [employees, setEmployees] = useState([]); // State to store employee data
+
+    
+    const [updateval,setUpdateval] = useState("ShowDetails")
+
+    const [id,setId] = useState();
+
+   
 
     const handleDelete = async (employeeId) => {
         try {
@@ -27,9 +36,7 @@ function EmpolyeInformation({ count, setCount }) {
         }
     };
 
-    const handleUpdate = (employeeId) => {
-        console.log(`Update functionality for employee ID: ${employeeId}`);
-    };
+    
 
     useEffect(() => {
         const fetchEmployees = async () => {
@@ -57,7 +64,8 @@ function EmpolyeInformation({ count, setCount }) {
     }, []);
 
     return (
-        <div className="flex">
+    <>
+    {updateval==="ShowDetails" ? ( <div className="flex">
             {/* Grid Layout for Table */}
             <div style={styles.tableWrapper}>
                 {/* Header Row */}
@@ -96,7 +104,8 @@ function EmpolyeInformation({ count, setCount }) {
                                 {/* Update Button */}
                                 <button
                                     style={styles.updateButton}
-                                    onClick={() => handleUpdate(employee._id)}
+                                    onClick={(e) => 
+                                    {setId(employee._id),setUpdateval("Update")}}
                                 >
                                     Update
                                 </button>
@@ -105,7 +114,16 @@ function EmpolyeInformation({ count, setCount }) {
                     ))
                 )}
             </div>
-        </div>
+        </div>):<div>
+
+                    <Update employeeId={id}></Update>
+        
+            
+        
+            </div>}
+       
+
+        </>
     );
 }
 
@@ -157,3 +175,4 @@ const styles = {
 };
 
 export default EmpolyeInformation;
+
